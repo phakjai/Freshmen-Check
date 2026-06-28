@@ -24,7 +24,7 @@ function initFaculties() {
     const item = document.createElement('button')
     item.type = 'button'
     item.textContent = f.label
-    item.className = 'w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors'
+    item.className = 'w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition-colors truncate'
     item.onclick = () => selectFaculty(f.value, f.label)
     menu.appendChild(item)
   })
