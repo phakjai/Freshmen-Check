@@ -5,6 +5,9 @@ const CACHE_TTL = 5 * 60 * 1000
 // TODO: ใส่ URL ของ Apps Script endpoint ตรงนี้
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGXqRZyvBgP-XqvZR3Seh24-6qUtvsHnT9Ed5xbcraywmTXy6JDm_0ggorAzYkQgeo/exec'
 
+// TODO: ใส่วันที่รับเสื้อเมื่อได้ข้อมูล
+const PICKUP_DATE = 'ยังไม่ระบุ'
+
 // TODO: ใส่ชื่อคณะที่ต้องการ
 const FACULTIES = [
   { value: 'เทคโน',   label: 'คณะเทคโนโลยีและการจัดการอุตสาหกรรม',  formUrl: 'https://forms.gle/cZ2PPbQxmLKEW2yK9' },
@@ -63,10 +66,17 @@ document.addEventListener('click', (e) => {
 
 // --- Cache & Data ---
 
+const MOCK_DATA = [
+  { 'รหัสนักศึกษา': '6701234567890', 'ชื่อ': 'สมชาย', 'นามสกุล': 'ใจดี', 'ไซส์เสื้อ': 'XL', 'สาขา': 'วิศวกรรมการผลิต' },
+  { 'รหัสนักศึกษา': '6701234567891', 'ชื่อ': 'สมหญิง', 'นามสกุล': 'รักเรียน', 'ไซส์เสื้อ': 'M', 'สาขา': 'เทคโนโลยีสารสนเทศ' },
+]
+
 async function fetchFromSource(faculty) {
-  if (!APPS_SCRIPT_URL) return []
-  const res = await fetch(`${APPS_SCRIPT_URL}?faculty=${encodeURIComponent(faculty)}`)
-  return await res.json()
+  // TODO: remove mock and uncomment real fetch when form is live
+  return MOCK_DATA
+  // if (!APPS_SCRIPT_URL) return []
+  // const res = await fetch(`${APPS_SCRIPT_URL}?faculty=${encodeURIComponent(faculty)}`)
+  // return await res.json()
 }
 
 async function getData(faculty) {
@@ -158,21 +168,33 @@ function closeModal(e) {
 }
 
 function showSuccess(data) {
+  // TODO: remove mock fallbacks when real sheet has these columns
+  const name = data['ชื่อ'] || 'สมชาย'
+  const surname = data['นามสกุล'] || 'ใจดี'
+  const studentId = data['รหัสนักศึกษา'] || document.getElementById('student-id').value.trim()
+  const size = data['ไซส์เสื้อ'] || 'XL'
+  const branch = data['สาขา'] || ''
+
   const el = document.getElementById('result')
   el.className = 'result-card'
   el.innerHTML = `
     <div class="bg-white overflow-hidden">
-      <div class="bg-primary-600 px-5 py-4 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+      <div class="px-5 pt-6 pb-5 text-center relative overflow-hidden" style="background: url('shirt.svg') center/cover no-repeat; background-color: #9B1C1C;">
+        <div class="absolute inset-0 bg-primary-600/75"></div>
+        <div class="relative z-10">
+        <div class="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden">
+          <img src="logo.svg" class="w-full h-full object-cover" />
         </div>
-        <div>
-          <p class="text-white/70 text-xs">ผลการตรวจสอบ</p>
-          <p class="text-white font-semibold text-base">มีสิทธิ์รับเสื้อ</p>
+        <p class="text-white font-semibold text-xl leading-snug">${name} ${surname}</p>
+        <p class="text-white/60 text-sm mt-1">${studentId}</p>
+        <div class="mt-3 inline-flex items-center gap-1.5 bg-white/15 rounded-full px-3 py-1">
+          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+          <p class="text-white text-xs font-medium">มีสิทธิ์รับเสื้อ</p>
+        </div>
         </div>
       </div>
       <div class="bg-white px-5 py-4 flex flex-col gap-3">
-        ${data['ไซส์เสื้อ'] ? `
+        ${size ? `
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center">
@@ -180,9 +202,9 @@ function showSuccess(data) {
             </div>
             <span class="text-sm text-gray-500">ไซส์เสื้อ</span>
           </div>
-          <span class="text-sm font-semibold text-gray-800 bg-gray-100 px-3 py-1 rounded-lg">${data['ไซส์เสื้อ']}</span>
+          <span class="text-sm font-semibold text-gray-800 bg-gray-100 px-3 py-1 rounded-lg">${size}</span>
         </div>` : ''}
-        ${data['สาขา'] ? `
+        ${branch ? `
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div class="w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center">
@@ -190,8 +212,26 @@ function showSuccess(data) {
             </div>
             <span class="text-sm text-gray-500">สาขา</span>
           </div>
-          <span class="text-sm font-semibold text-gray-800">${data['สาขา']}</span>
+          <span class="text-sm font-semibold text-gray-800">${branch}</span>
         </div>` : ''}
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center">
+              <svg class="w-4 h-4 text-primary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <span class="text-sm text-gray-500">จุดรับเสื้อ</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-800">อาคารบริหารเก่า (ตึกกองงาน)</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-lg bg-primary-50 flex items-center justify-center">
+              <svg class="w-4 h-4 text-primary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <span class="text-sm text-gray-500">วันที่รับเสื้อ</span>
+          </div>
+          <span class="text-sm font-semibold text-gray-800">${PICKUP_DATE}</span>
+        </div>
       </div>
     </div>
   `
@@ -260,3 +300,6 @@ function initFormLinks() {
 initFaculties()
 initFormLinks()
 restartCountdown(null)
+
+// TODO: remove — force open success modal for preview
+showSuccess({ 'รหัสนักศึกษา': '6701234567890', 'ชื่อ': 'สมชาย', 'นามสกุล': 'ใจดี', 'ไซส์เสื้อ': 'XL', 'สาขา': 'วิศวกรรมการผลิต' })
