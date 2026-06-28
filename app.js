@@ -66,17 +66,10 @@ document.addEventListener('click', (e) => {
 
 // --- Cache & Data ---
 
-const MOCK_DATA = [
-  { 'รหัสนักศึกษา': '6701234567890', 'ชื่อ': 'สมชาย', 'นามสกุล': 'ใจดี', 'ไซส์เสื้อ': 'XL', 'สาขา': 'วิศวกรรมการผลิต' },
-  { 'รหัสนักศึกษา': '6701234567891', 'ชื่อ': 'สมหญิง', 'นามสกุล': 'รักเรียน', 'ไซส์เสื้อ': 'M', 'สาขา': 'เทคโนโลยีสารสนเทศ' },
-]
-
 async function fetchFromSource(faculty) {
-  // TODO: remove mock and uncomment real fetch when form is live
-  return MOCK_DATA
-  // if (!APPS_SCRIPT_URL) return []
-  // const res = await fetch(`${APPS_SCRIPT_URL}?faculty=${encodeURIComponent(faculty)}`)
-  // return await res.json()
+  if (!APPS_SCRIPT_URL) return []
+  const res = await fetch(`${APPS_SCRIPT_URL}?faculty=${encodeURIComponent(faculty)}`)
+  return await res.json()
 }
 
 async function getData(faculty) {
@@ -168,11 +161,10 @@ function closeModal(e) {
 }
 
 function showSuccess(data) {
-  // TODO: remove mock fallbacks when real sheet has these columns
-  const name = data['ชื่อ'] || 'สมชาย'
-  const surname = data['นามสกุล'] || 'ใจดี'
+  const name = data['ชื่อ'] || ''
+  const surname = data['นามสกุล'] || ''
   const studentId = data['รหัสนักศึกษา'] || document.getElementById('student-id').value.trim()
-  const size = data['ไซส์เสื้อ'] || 'XL'
+  const size = data['ไซส์เสื้อ'] || ''
   const branch = data['สาขา'] || ''
 
   const el = document.getElementById('result')
@@ -301,5 +293,3 @@ initFaculties()
 initFormLinks()
 restartCountdown(null)
 
-// TODO: remove — force open success modal for preview
-showSuccess({ 'รหัสนักศึกษา': '6701234567890', 'ชื่อ': 'สมชาย', 'นามสกุล': 'ใจดี', 'ไซส์เสื้อ': 'XL', 'สาขา': 'วิศวกรรมการผลิต' })
