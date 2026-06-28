@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เช็คสิทธิ์รับเสื้อ | มจพ</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50:  '#FDF2F2',
+              100: '#FAE0E0',
+              200: '#F4BABA',
+              400: '#D94F4F',
+              600: '#9B1C1C',
+              700: '#7B1414',
+              800: '#5C0F0F',
+            }
+          },
+          fontFamily: { sans: ['Sarabun', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .result-card { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .badge-pulse { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    #tab-check, #tab-form { outline: none; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+  <header class="bg-white border-b border-gray-100 px-8 py-4 flex items-center gap-3 sticky top-0 z-20">
+    <img src="logo.svg" class="w-8 h-8 rounded-full object-cover" alt="KMUTNB" />
+    <div>
+      <p class="text-[10px] text-gray-400 tracking-widest uppercase font-medium">KMUTNB</p>
+      <p class="text-sm font-semibold text-gray-700 leading-tight">เช็คสิทธิ์รับเสื้อเฟรชชี่</p>
+    </div>
+    <div id="countdown-wrap" class="hidden ml-auto flex items-center gap-1.5">
+      <div id="status-dot" class="w-1.5 h-1.5 rounded-full bg-green-400 badge-pulse"></div>
+      <p class="text-xs text-gray-400">รีเฟรชใน</p>
+      <p id="countdown" class="text-xs text-gray-500 font-medium tabular-nums"></p>
+    </div>
+  </header>
+
+  <main class="min-h-[calc(100vh-61px)] flex items-center">
+    <div class="w-full max-w-5xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+      <div>
+        <p class="text-xs font-medium text-primary-600 uppercase tracking-widest mb-4">Freshmen 2026</p>
+        <h1 class="text-5xl font-semibold text-gray-900 leading-tight mb-5">ตรวจสอบสิทธิ์<br/>รับเสื้อนักศึกษา</h1>
+        <p class="text-gray-400 text-sm leading-relaxed">กรอกข้อมูลเพื่อตรวจสอบว่าคุณมีสิทธิ์รับเสื้อนักศึกษา<br/>มจพ ประจำปีการศึกษา 2569<br/>สำหรับนักศึกษาวิทยาเขตปราจีนบุรี</p>
+        <div class="mt-10 flex items-center gap-3">
+          <img src="logo.svg" class="w-11 h-11 rounded-full object-cover opacity-70" alt="KMUTNB" />
+          <div>
+            <p class="text-xs text-gray-500">มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ</p>
+            <p class="text-xs text-gray-300 mt-0.5">King Mongkut's University of Technology North Bangkok</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+
+        <div class="flex border-b border-gray-100">
+          <button onclick="switchTab('check')" id="tab-check"
+            class="flex-1 py-3.5 text-sm font-medium transition-colors text-primary-600 border-b-2 border-primary-600">
+            เช็คสิทธิ์
+          </button>
+          <button onclick="switchTab('form')" id="tab-form"
+            class="flex-1 py-3.5 text-sm font-medium transition-colors text-gray-400 border-b-2 border-transparent hover:text-gray-600">
+            กรอกแบบฟอร์ม
+          </button>
+        </div>
+
+        <div id="panel-check" class="p-8">
+          <div class="flex flex-col gap-4">
+            <div class="relative" id="dropdown-wrap">
+              <label class="text-xs font-medium text-gray-500 mb-1.5 block">คณะ</label>
+              <button type="button" id="dropdown-btn" onclick="toggleDropdown()"
+                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-left flex items-center justify-between hover:border-gray-300 transition-all focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100">
+                <span id="dropdown-label" class="text-gray-400">เลือกคณะ...</span>
+                <svg id="dropdown-arrow" class="w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <input type="hidden" id="faculty" />
+              <div id="dropdown-menu" class="hidden absolute z-10 mt-1.5 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"></div>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-gray-500 mb-1.5 block">รหัสนักศึกษา</label>
+              <input id="student-id" type="text" placeholder="6x0xxxxxxxxxx" maxlength="13"
+                class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 placeholder-gray-300 hover:border-gray-300 focus:outline-none focus:border-primary-400 focus:ring-2 focus:ring-primary-100 transition-all" />
+            </div>
+            <button onclick="checkEligibility()"
+              class="w-full bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white rounded-xl py-3.5 text-sm font-semibold transition-all duration-150 mt-1">
+              ตรวจสอบสิทธิ์
+            </button>
+            <p id="inline-error" class="hidden text-xs text-red-500 text-center -mt-2"></p>
+          </div>
+        </div>
+
+        <div id="panel-form" class="hidden p-8">
+          <p class="text-sm text-gray-500 mb-4">เลือกคณะเพื่อเปิดแบบฟอร์ม</p>
+          <div id="form-links" class="flex flex-col gap-2"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div id="loading" class="hidden fixed inset-0 bg-black/20 z-40 flex items-center justify-center">
+    <div class="bg-white rounded-2xl p-8 text-center shadow-xl">
+      <div class="w-8 h-8 border-2 border-primary-100 border-t-primary-600 rounded-full animate-spin mx-auto mb-3"></div>
+      <p class="text-sm text-gray-400">กำลังตรวจสอบ...</p>
+    </div>
+  </div>
+
+  <div id="modal-backdrop" class="hidden fixed inset-0 bg-black/40 z-30 flex items-end sm:items-center justify-center px-4 pb-4 sm:pb-0" onclick="closeModal(event)">
+    <div id="modal" class="hidden rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
+      <div id="result"></div>
+      <div class="bg-white px-5 pt-3 pb-5">
+        <button onclick="closeModal()" class="w-full border border-gray-200 text-gray-500 rounded-2xl py-3 text-sm font-medium hover:bg-gray-50 transition-colors">
+          ปิด
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
