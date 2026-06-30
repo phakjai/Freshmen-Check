@@ -135,7 +135,7 @@ async function checkEligibility() {
 
   document.getElementById('loading').classList.add('hidden')
 
-  const match = rows.find(row =>
+  const match = rows.findLast(row =>
     String(row['รหัสนักศึกษา']).trim() === studentId
   )
 
