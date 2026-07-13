@@ -162,7 +162,7 @@ function closeModal(e) {
 }
 
 function showSuccess(data) {
-  const name = data['ชื่อ'] || ''
+  const name = data['ชื่อจริง'] || ''
   const surname = data['นามสกุล'] || ''
   const studentId = data['รหัสนักศึกษา'] || document.getElementById('student-id').value.trim()
   const size = data['ไซส์เสื้อ'] || ''
