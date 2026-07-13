@@ -14,6 +14,7 @@ const FACULTIES = [
   { value: 'วิศวะ',   label: 'คณะวิศวกรรมศาสตร์',                    formUrl: 'https://forms.gle/aRB1ubfdzwAnya8h8' },
   { value: 'อก.',     label: 'คณะอุตสาหกรรมเกษตรดิจิทัล',            formUrl: 'https://forms.gle/PMT9Xwn6psKjrsHw9' },
   { value: 'บริหาร',  label: 'คณะบริหารธุรกิจและอุตสาหกรรมบริการ',   formUrl: 'https://forms.gle/k6gcqZY5pbbVYgeA8' },
+  { value: 'วิทยาศาสตร์ประยุกต์',  label: 'คณะวิทยาศาสตร์ประยุกต์',   formUrl: 'https://forms.gle/G2nuCRDZGBGbMGAn6' },
 ]
 
 let countdownInterval = null
