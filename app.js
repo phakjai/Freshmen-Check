@@ -5,8 +5,7 @@ const CACHE_TTL = 5 * 60 * 1000
 // TODO: ใส่ URL ของ Apps Script endpoint ตรงนี้
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGXqRZyvBgP-XqvZR3Seh24-6qUtvsHnT9Ed5xbcraywmTXy6JDm_0ggorAzYkQgeo/exec'
 
-// TODO: ใส่วันที่รับเสื้อเมื่อได้ข้อมูล
-const PICKUP_DATE = 'ยังไม่ระบุ'
+const PICKUP_DATE = 'วันจันทร์ที่ 16 พฤศจิกายน 2569'
 
 // TODO: ใส่ชื่อคณะที่ต้องการ
 const FACULTIES = [
